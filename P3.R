@@ -1,5 +1,6 @@
 library(lubridate)
 library(ggplot2)
+library(depmixS4)
 
 ### Import data ###
 getwd()
@@ -17,5 +18,12 @@ scaled_data$Date <- as.Date(scaled_data$Date, format = "%d/%m/%y")
 startTime <- strptime("06:20:00", format="%H:%M:%S")
 endTime <- strptime("10:20:00", format="%H:%M:%S")
 scaled_data <- subset(scaled_data, difftime(strptime(scaled_data$Time, format="%H:%M:%S"), startTime) >= 0 & difftime(strptime(scaled_data$Time, format="%H:%M:%S"), endTime) < 0)
-#scaled_data <- subset(scaled_data, scaled_data$Date == as.Date("30/1/2007", format = "%d/%m/%y"))
 #ggplot(scaled_data, aes(x= scaled_data$Time, y= scaled_data$Global_active_power)) + geom_point()
+#unique(scaled_data$Date)
+
+set.seed(1)
+model <- depmix(response = scaled_data$Global_active_power ~ 1, data = scaled_data, nstates = 2, ntimes=c(52))
+fitModel <-fit(model)
+logLik(fitModel)
+BIC(fitModel)
+summary(fitModel)
